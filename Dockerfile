@@ -1,5 +1,4 @@
-ARG S6_ARCH
-FROM oznu/s6-alpine:3.12-${S6_ARCH:-amd64}
+FROM crazymax/alpine-s6:latest
 
 RUN apk add --no-cache jq curl bind-tools
 
