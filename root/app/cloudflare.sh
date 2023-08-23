@@ -68,8 +68,10 @@ getPublicIpAddress() {
 }
 
 getDnsRecordName() {
-  if [ ! -z "$SUBDOMAIN" ]; then
-    echo $SUBDOMAIN.$ZONE
+  local subdomain=$1
+
+  if [ ! -z "$subdomain" ]; then
+    echo $subdomain.$ZONE
   else
     echo $ZONE
   fi
