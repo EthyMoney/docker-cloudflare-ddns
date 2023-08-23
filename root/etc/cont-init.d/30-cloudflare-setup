@@ -76,24 +76,44 @@ if [ "$PublicIpAddress" == "" ]; then
   exit 1
 fi
 
-# Get the ID of the dns record from the CloudFlare API
-CFDnsRecordName=$(getDnsRecordName)
-CFDnsRecordId=$(getDnsRecordId $CFZoneId $CFDnsRecordName)
+# clear the config file
+echo "" > /config/cloudflare.conf
 
-# If the dns record does not exist, create it now.
-if [ "$CFDnsRecordId" == "null" ]; then
-  echo "DNS record for '$CFDnsRecordName' was not found in $ZONE zone. Creating now..."
-  CFDnsRecordId=$(createDnsRecord $CFZoneId $CFDnsRecordName $PublicIpAddress)
+# Function to process each individual subdomain
+process_subdomain() {
+    local subdomain=$1
 
-  if [ "$CFDnsRecordId" == "null" ]; then
-    echo "----------------------------------------------------------------"
-    echo "ERROR: Failed to create DNS record '$CFDnsRecordName'"
-    echo "----------------------------------------------------------------"
-    exit 1
-  fi
+    # Get the ID of the dns record from the CloudFlare API
+    local CFDnsRecordName=$(getDnsRecordName $subdomain)
+    local CFDnsRecordId=$(getDnsRecordId $CFZoneId $CFDnsRecordName)
 
-fi
+    # If the dns record does not exist, create it now.
+    if [ "$CFDnsRecordId" == "null" ]; then
+        echo "DNS record for '$CFDnsRecordName' was not found in $ZONE zone. Creating one now..."
+        CFDnsRecordId=$(createDnsRecord $CFZoneId $CFDnsRecordName $PublicIpAddress)
 
-echo "DNS Record: $CFDnsRecordName ($CFDnsRecordId)"
-echo "CF_ZONE_ID=\"$CFZoneId\" CF_RECORD_ID=\"$CFDnsRecordId\" CF_RECORD_NAME=\"$CFDnsRecordName\"" > /config/cloudflare.conf
+        if [ "$CFDnsRecordId" == "null" ]; then
+            echo "----------------------------------------------------------------"
+            echo "ERROR: Failed to create DNS record '$CFDnsRecordName'"
+            echo "Continuing with other subdomains."
+            echo "----------------------------------------------------------------"
+            return  # Return without exiting the script. Allows other subdomains to be processed even if any fail.
+        fi
+    fi
+
+    echo "DNS Record: $CFDnsRecordName ($CFDnsRecordId)"
+    echo "CF_ZONE_ID=\"$CFZoneId\" CF_RECORD_ID=\"$CFDnsRecordId\" CF_RECORD_NAME=\"$CFDnsRecordName\"" >> /config/cloudflare.conf
+}
+
 echo "$CRON	/etc/cont-init.d/50-ddns" > /var/spool/cron/crontabs/root
+
+# Split SUBDOMAIN by commas
+IFS=',' read -ra subdomains <<< "$SUBDOMAIN"
+
+# If no subdomains are defined, assume root domain
+[ -z "$SUBDOMAIN" ] && subdomains=("")
+
+# Iterate over the subdomains and process each one
+for subdomain in "${subdomains[@]}"; do
+    process_subdomain "$subdomain"
+done
