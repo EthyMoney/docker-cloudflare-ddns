@@ -1,6 +1,10 @@
-[![Travis](https://img.shields.io/travis/oznu/docker-cloudflare-ddns.svg)](https://travis-ci.org/oznu/docker-cloudflare-ddns) [![Docker Pulls](https://img.shields.io/docker/pulls/oznu/cloudflare-ddns.svg)](https://hub.docker.com/r/oznu/cloudflare-ddns/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/oznu/cloudflare-ddns.svg)](https://hub.docker.com/r/oznu/cloudflare-ddns/)
 
 # Docker CloudFlare DDNS
+
+This is a modified version of the original project [oznu/docker-cloudflare-ddns](https://github.com/oznu/docker-cloudflare-ddns) with added support for updating multiple subdomains. In the original version, you could only accomplish updating many subdomains by running multiple containers. This version allows you to update multiple subdomains with a single container by specifying a comma separated list of subdomains in the `SUBDOMAIN` environment variable. This is something I really wanted from the original project, so I made this version to accomplish that. Hopefully you find it useful too!
+
+## Original README below (with notes about the multi-subdomain feature)
 
 This small Alpine Linux based Docker image will allow you to use the free [CloudFlare DNS Service](https://www.cloudflare.com/dns/) as a Dynamic DNS Provider ([DDNS](https://en.wikipedia.org/wiki/Dynamic_DNS)).
 
@@ -33,7 +37,7 @@ docker run \
   * `API_KEY_FILE` - Path to load your CloudFlare scoped API token from (e.g. a Docker secret). *If both `API_KEY_FILE` and `API_KEY` are specified, `API_KEY_FILE` takes precedence.*
 * `-e ZONE` - The DNS zone that DDNS updates should be applied to. **Required**
   * `ZONE_FILE` - Path to load your CloudFlare DNS Zone from (e.g. a Docker secret). *If both `ZONE_FILE` and `ZONE` are specified, `ZONE_FILE` takes precedence.*
-* `-e SUBDOMAIN` - A subdomain of the `ZONE` to write DNS changes to. If this is not supplied the root zone will be used.
+* `-e SUBDOMAIN` - Subdomain(s) of the `ZONE` to write DNS changes to. If this is not supplied the root zone will be used. If you want to update multiple subdomains you can specify them as a comma separated list (e.g. `SUBDOMAIN=subdomain1,subdomain2`).
   * `SUBDOMAIN_FILE` - Path to load your CloudFlare DNS Subdomain from (e.g. a Docker secret). *If both `SUBDOMAIN_FILE` and `SUBDOMAIN` are specified, `SUBDOMAIN_FILE` takes precedence.*
 
 ## Optional Parameters
@@ -85,7 +89,7 @@ services:
     environment:
       - API_KEY=xxxxxxx
       - ZONE=example.com
-      - SUBDOMAIN=subdomain
+      - SUBDOMAIN=subdomain(s)
       - PROXIED=false
 ```
 
