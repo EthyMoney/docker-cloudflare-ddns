@@ -2,7 +2,7 @@
 
 # Docker CloudFlare DDNS
 
-This is a modified version of the original project [oznu/docker-cloudflare-ddns](https://github.com/oznu/docker-cloudflare-ddns) with added support for updating multiple subdomains. In the original version, you could only accomplish updating many subdomains by running multiple containers. This version allows you to update multiple subdomains with a single container by specifying a comma separated list of subdomains in the `SUBDOMAIN` environment variable. This is something I really wanted from the original project, so I made this version to accomplish that. Hopefully you find it useful too!
+This is a modified version of the original (and now archived) project [oznu/docker-cloudflare-ddns](https://github.com/oznu/docker-cloudflare-ddns) with added support for updating multiple subdomains. In the original version, you could only accomplish updating many subdomains by running multiple containers. This version allows you to update multiple subdomains with a single container by specifying a comma separated list of subdomains in the `SUBDOMAIN` environment variable. This is something I really wanted from the original project, so I made this version to accomplish that. Hopefully you find it useful too!
 
 ## Original README below (with notes about the multi-subdomain feature)
 
