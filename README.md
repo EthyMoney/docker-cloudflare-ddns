@@ -1,4 +1,4 @@
-[![Docker Pulls](https://img.shields.io/docker/pulls/oznu/cloudflare-ddns.svg)](https://hub.docker.com/r/oznu/cloudflare-ddns/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/ultimate360/cloudflare-ddns-multi-subdomain)](https://hub.docker.com/r/ultimate360/cloudflare-ddns-multi-subdomain)
 
 # Docker CloudFlare DDNS
 
